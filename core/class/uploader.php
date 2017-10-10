@@ -312,11 +312,25 @@ class uploader {
             }
 
             // CHECK & CREATE UPLOAD FOLDER
-            if (!is_dir($this->typeDir)) {
+            if (!is_dir($this->typeDir))
+            {
                 if (!mkdir($this->typeDir, $this->config['dirPerms']))
                     $this->backMsg("Cannot create {dir} folder.", array('dir' => $this->type));
-            } elseif (!is_readable($this->typeDir))
+            }
+            elseif ($this->allFolders && is_dir($this->typeDir))
+            {
+                foreach($this->config['types'] as $folder => $config)
+                {
+                    if (sizeof($folder) > 0 && $folder !== '' && !file_exists($this->typeDir.$folder))
+                    {
+                        mkdir($this->typeDir.$folder, $this->config['dirPerms']);
+                    }
+                }
+            }
+            elseif (!is_readable($this->typeDir))
+            {
                 $this->backMsg("Cannot read upload folder.");
+            }
         }
     }
 
