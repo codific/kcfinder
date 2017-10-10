@@ -34,7 +34,11 @@ class uploader {
 /** Got from $_GET['type'] or first one $config['types'] array key, if inexistant
   * @var string */
     protected $type;
-
+    
+/** Got from $_GET['allFolders'] or the config option $config['allFolders']
+ *  @var string */ 
+    protected $allFolders;
+    
 /** Helper property. Local filesystem path to the Type Directory
   * Equivalent: $config['uploadDir'] . "/" . $type
   * @var string */
@@ -136,8 +140,14 @@ class uploader {
         $this->type = (
             isset($_GET['type']) &&
             isset($this->types[$_GET['type']])
-        )
+            )
             ? $_GET['type'] : $firstType;
+
+        // GET ALL FOLDERS FLAG
+        $allFolders = &$this->config['allFolders'];
+        $this->allFolders = (
+            isset($_GET['allFolders'])  )
+            ? $_GET['allFolders'] : $allFolders;
 
         // LOAD TYPE DIRECTORY SPECIFIC CONFIGURATION IF EXISTS
         if (is_array($this->types[$this->type])) {
@@ -358,7 +368,14 @@ class uploader {
         $rPath = realpath($file);
         if (strtoupper(substr(PHP_OS, 0, 3)) == "WIN")
             $rPath = str_replace("\\", "/", $rPath);
-        return (substr($rPath, 0, strlen($this->typeDir)) === $this->typeDir);
+        if ($this->allFolders)
+        {
+            return (substr($rPath, 0, strlen($this->typeDir)-1) === rtrim($this->typeDir,"/"));
+        }
+        else
+        {
+            return (substr($rPath, 0, strlen($this->typeDir)) === $this->typeDir);
+        }
     }
 
     protected function checkFilename($file) {
@@ -461,18 +478,18 @@ class uploader {
 
         if ((substr($dir, 0, 1) == ".") || (substr(basename($dir), 0, 1) == "."))
             return false;
-
+        
         if ($inclType) {
             $first = explode("/", $dir);
             $first = $first[0];
-            if ($first != $this->type)
+            if ($first != $this->type && !$this->allFolders)
                 return false;
             $return = $this->removeTypeFromPath($dir);
         } else {
             $return = $dir;
             $dir = "{$this->type}/$dir";
         }
-
+        
         if (!$existing)
             return $return;
 

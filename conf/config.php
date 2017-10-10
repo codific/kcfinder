@@ -25,9 +25,10 @@ return array(
     'uploadURL' => "upload",
     'uploadDir' => "",
     'theme' => "default",
+    'allFolders' => true,
 
     'types' => array(
-
+        '' => '',
     // (F)CKEditor types
         'files'   =>  "",
         'flash'   =>  "swf",

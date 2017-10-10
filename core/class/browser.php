@@ -134,9 +134,21 @@ class browser extends uploader {
         return $this->output();
     }
 
+    
+
     protected function act_init() {
         $tree = $this->getDirInfo($this->typeDir);
-        $tree['dirs'] = $this->getTree($this->session['dir']);
+        $tree['dirs'] = [];
+        
+        if($this->allFolders)
+            // Display only folders which are in the types array
+            foreach($this->getTree('') as $dir) {
+                if(array_key_exists($dir['name'], $this->types))
+                    $tree['dirs'][] = $dir;
+            }
+        else
+            $tree['dirs'] = $this->getTree($this->session['dir']);
+            
         if (!is_array($tree['dirs']) || !count($tree['dirs']))
             unset($tree['dirs']);
         $files = $this->getFiles($this->session['dir']);
@@ -276,11 +288,11 @@ class browser extends uploader {
         header("Content-Type: text/plain; charset={$this->charset}");
 
         if (!$this->config['access']['files']['upload'] ||
-            (!isset($_POST['dir']) && !isset($_GET['dir']))
+            !isset($_POST['dir'])
         )
             $this->errorMsg("Unknown error.");
 
-        $dir = isset($_GET['dir']) ? $this->getDir() : $this->postDir();
+        $dir = $this->postDir();
 
         if (!dir::isWritable($dir))
             $this->errorMsg("Cannot access or write to upload folder.");
@@ -784,14 +796,23 @@ class browser extends uploader {
             }
         } else
             return false;
-
+        
         return $dirs;
     }
 
     protected function postDir($existent=true) {
         $dir = $this->typeDir;
-        if (isset($_POST['dir']))
+
+        if (isset($_POST['dir']) &&
+            sizeof($_POST['dir']) > 0 &&
+            $_POST['dir'] !== '') 
+        {
             $dir .= "/" . $_POST['dir'];
+        }
+        elseif ($dir !== '/') 
+        {
+            $dir = rtrim($dir, "/");
+        }
         if (!$this->checkFilePath($dir))
             $this->errorMsg("Unknown error.");
         if ($existent && (!is_dir($dir) || !is_readable($dir)))
@@ -801,8 +822,16 @@ class browser extends uploader {
 
     protected function getDir($existent=true) {
         $dir = $this->typeDir;
-        if (isset($_GET['dir']))
+        if (isset($_GET['dir']) &&
+            sizeof($_GET['dir']) > 0 &&
+            $_GET['dir'] !== '')
+        {
             $dir .= "/" . $_GET['dir'];
+        }
+        elseif ($dir !== '/') 
+        {
+            $dir = rtrim($dir, "/");
+        }
         if (!$this->checkFilePath($dir))
             $this->errorMsg("Unknown error.");
         if ($existent && (!is_dir($dir) || !is_readable($dir)))
