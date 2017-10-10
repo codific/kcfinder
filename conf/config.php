@@ -16,30 +16,26 @@
    even if you are using session configuration.
    See http://kcfinder.sunhater.com/install for setting descriptions */
 
-return array(
+$_CONFIG = array(
 
 
 // GENERAL SETTINGS
 
     'disabled' => true,
-    'uploadURL' => "upload",
+    'uploadURL' => "/userfiles",
     'uploadDir' => "",
     'theme' => "default",
+    // Use this flag if you want to show all folders listed in types
+    // If this flag is used the first key of the types array needs to be set as empty string
     'allFolders' => true,
 
     'types' => array(
         '' => '',
     // (F)CKEditor types
+        'images'  => "",
         'files'   =>  "",
-        'flash'   =>  "swf",
-        'images'  =>  "*img",
-
-    // TinyMCE types
-        'file'    =>  "",
-        'media'   =>  "swf flv avi mpg mpeg qt mov wmv asf rm",
-        'image'   =>  "*img",
+        
     ),
-
 
 // IMAGE SETTINGS
 
@@ -59,7 +55,7 @@ return array(
 // DISABLE / ENABLE SETTINGS
 
     'denyZipDownload' => false,
-    'denyUpdateCheck' => false,
+    'denyUpdateCheck' => true,
     'denyExtensionRename' => false,
 
 
@@ -85,7 +81,7 @@ return array(
         )
     ),
 
-    'deniedExts' => "exe com msi bat cgi pl php phps phtml php3 php4 php5 php6 py pyc pyo pcgi pcgi3 pcgi4 pcgi5 pchi6",
+    'deniedExts' => "exe com msi bat cgi pl php phps phtml php3 php4 php5 php6 py pyc pyo pcgi pcgi3 pcgi4 pcgi5 pchi6 sh",
 
 
 // MISC SETTINGS
@@ -109,11 +105,33 @@ return array(
 
 // THE FOLLOWING SETTINGS CANNOT BE OVERRIDED WITH SESSION SETTINGS
 
-    '_sessionVar' => "KCFINDER",
-    '_check4htaccess' => true,
     '_normalizeFilenames' => false,
-    '_dropUploadMaxFilesize' => 10485760,
+    '_check4htaccess' => true,
     //'_tinyMCEPath' => "/tiny_mce",
+
+    '_sessionVar' => "KCFINDER",
+    //'_sessionLifetime' => 30,
+    //'_sessionDir' => "/full/directory/path",
+    //'_sessionDomain' => ".mysite.com",
+    //'_sessionPath' => "/my/path",
+
     //'_cssMinCmd' => "java -jar /path/to/yuicompressor.jar --type css {file}",
     //'_jsMinCmd' => "java -jar /path/to/yuicompressor.jar --type js {file}",
+
 );
+
+//THIS CODE ALLOWS ACCESSING THE PLUGIN IF THERE IS AN AUTHENTICATED USER
+$originalDir = getcwd();
+$root =  $_SERVER['DOCUMENT_ROOT']."/../";
+chdir($root);
+require 'init_autoloader.php';
+Zend\Mvc\Application::init(require 'config/application.config.php');
+chdir($originalDir);
+$auth = new Zend\Authentication\AuthenticationService();
+if($auth->hasIdentity() and $auth->getIdentity()->role==4)
+{
+    $_CONFIG['disabled'] = false;
+}
+
+
+?>

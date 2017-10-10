@@ -17,7 +17,7 @@ namespace kcfinder;
 class uploader {
 
 /** Release version */
-    const VERSION = "3.20-test2";
+    const VERSION = "3.12";
 
 /** Config session-overrided settings
   * @var array */
@@ -111,10 +111,59 @@ class uploader {
         if (count($_FILES))
             $this->file = &$_FILES[key($_FILES)];
 
-        // CONFIG & SESSION SETUP
-        $session = new session("conf/config.php");
-        $this->config = $session->getConfig();
-        $this->session = &$session->values;
+        // LOAD DEFAULT CONFIGURATION
+        require "conf/config.php";
+
+        // SETTING UP SESSION
+        if (!session_id()) {
+            if (isset($_CONFIG['_sessionLifetime']))
+                ini_set('session.gc_maxlifetime', $_CONFIG['_sessionLifetime'] * 60);
+            if (isset($_CONFIG['_sessionDir']))
+                ini_set('session.save_path', $_CONFIG['_sessionDir']);
+            if (isset($_CONFIG['_sessionDomain']))
+                ini_set('session.cookie_domain', $_CONFIG['_sessionDomain']);
+            //session_start();
+        }
+
+        // LOAD SESSION CONFIGURATION IF EXISTS
+        $this->config = $_CONFIG;
+        $sessVar = "_sessionVar";
+        if (isset($_CONFIG[$sessVar])) {
+
+            $sessVar = $_CONFIG[$sessVar];
+
+            if (!isset($_SESSION[$sessVar]))
+                $_SESSION[$sessVar] = array();
+
+            $sessVar = &$_SESSION[$sessVar];
+
+            if (!is_array($sessVar))
+                $sessVar = array();
+
+            foreach ($sessVar as $key => $val)
+                if ((substr($key, 0, 1) != "_") && isset($_CONFIG[$key]))
+                    $this->config[$key] = $val;
+
+            if (!isset($sessVar['self']))
+                $sessVar['self'] = array();
+
+            $this->session = &$sessVar['self'];
+
+        } else
+            $this->session = &$_SESSION;
+
+        // SECURING THE SESSION
+        $stamp = array(
+            'ip' => $_SERVER['REMOTE_ADDR'],
+            'agent' => md5($_SERVER['HTTP_USER_AGENT'])
+        );
+        if (!isset($this->session['stamp']))
+            $this->session['stamp'] = $stamp;
+        elseif (!is_array($this->session['stamp']) || ($this->session['stamp'] !== $stamp)) {
+            if ($this->session['stamp']['ip'] === $stamp['ip'])
+                session_destroy();
+            die;
+        }
 
         // IMAGE DRIVER INIT
         if (isset($this->config['imageDriversPriority'])) {
@@ -127,7 +176,7 @@ class uploader {
         if ((!isset($driver) || ($driver === false)) &&
             (image::getDriver(array($this->imageDriver)) === false)
         )
-            $this->backMsg("Cannot find any of the supported PHP image extensions!");
+            die("Cannot find any of the supported PHP image extensions!");
 
         // WATERMARK INIT
         if (isset($this->config['watermark']) && is_string($this->config['watermark']))
@@ -189,7 +238,7 @@ class uploader {
         } elseif ($this->config['uploadURL'] == "/") {
             $this->config['uploadDir'] = strlen($this->config['uploadDir'])
                 ? path::normalize($this->config['uploadDir'])
-                : path::normalize(realpath($_SERVER['DOCUMENT_ROOT']));
+                : path::normalize($_SERVER['DOCUMENT_ROOT']);
             $this->typeDir = "{$this->config['uploadDir']}/{$this->type}";
             $this->typeURL = "/{$this->type}";
 
@@ -204,7 +253,7 @@ class uploader {
             $this->typeDir = "{$this->config['uploadDir']}/{$this->type}";
             $this->typeURL = "{$this->config['uploadURL']}/{$this->type}";
         }
-
+        
         // HOST APPLICATIONS INIT
         if (isset($_GET['CKEditorFuncNum'])) {
             $this->opener['name'] = "ckeditor";
@@ -781,3 +830,5 @@ if (window.opener) window.close();
         return file_get_contents("conf/upload.htaccess");
     }
 }
+
+?>
