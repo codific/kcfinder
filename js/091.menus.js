@@ -338,7 +338,13 @@ _.menuDir = function(dir, e) {
 
     var data = dir.data(),
         html = '<ul>';
-
+    var currentFolder = dir.closest('a').attr("id");
+    var rootFolder = true;
+    if (currentFolder.indexOf("/") >= 0)
+    	{
+    		rootFolder = false;
+    	}
+    
     if (_.clipboard && _.clipboard.length) {
 
         // COPY CLIPBOARD
@@ -378,27 +384,31 @@ _.menuDir = function(dir, e) {
         _.menu.addDivider();
 
     // NEW SUBFOLDER
-    if (_.access.dirs.create)
-        _.menu.addItem("kcact:mkdir", _.label("New Subfolder..."), function(e) {
-            if (!data.writable) return false;
-            _.fileNameDialog(
-                {dir: data.path},
-                "newDir", "", _.getURL("newDir"), {
-                    title: "New folder name:",
-                    errEmpty: "Please enter new folder name.",
-                    errSlash: "Unallowable characters in folder name.",
-                    errDot: "Folder name shouldn't begins with '.'"
-                }, function() {
-                    _.refreshDir(dir);
-                    _.initDropUpload();
-                    if (!data.hasDirs) {
-                        dir.data('hasDirs', true);
-                        dir.children('span.brace').addClass('closed');
+    if(!rootFolder)
+    	{
+        if (_.access.dirs.create)
+            _.menu.addItem("kcact:mkdir", _.label("New Subfolder..."), function(e) {
+                if (!data.writable) return false;
+                _.fileNameDialog(
+                    {dir: data.path},
+                    "newDir", "", _.getURL("newDir"), {
+                        title: "New folder name:",
+                        errEmpty: "Please enter new folder name.",
+                        errSlash: "Unallowable characters in folder name.",
+                        errDot: "Folder name shouldn't begins with '.'"
+                    }, function() {
+                        _.refreshDir(dir);
+                        _.initDropUpload();
+                        if (!data.hasDirs) {
+                            dir.data('hasDirs', true);
+                            dir.children('span.brace').addClass('closed');
+                        }
                     }
-                }
-            );
-            return false;
-        }, !data.writable);
+                );
+                return false;
+            }, !data.writable);
+    	}
+
 
     // RENAME
     if (_.access.dirs.rename)

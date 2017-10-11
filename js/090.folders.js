@@ -65,7 +65,7 @@ _.setTreeData = function(data, path) {
 _.buildTree = function(root, path) {
     if (!path) path = "";
     path += root.name;
-    var cdir, html = '<div class="folder"><a href="kcdir:/' + $.$.escapeDirs(path) + '"><span class="brace">&nbsp;</span><span class="folder">' + $.$.htmlData(root.name) + '</span></a>';
+    var cdir, html = '<div class="folder"><a href="kcdir:/' + $.$.escapeDirs(path) + '" id="menu_'+$.$.escapeDirs(path)+'"><span class="brace">&nbsp;</span><span class="folder">' + $.$.htmlData(root.name) + '</span></a>';
     if (root.dirs) {
         html += '<div class="folders">';
         for (var i = 0; i < root.dirs.length; i++) {
