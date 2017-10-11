@@ -231,7 +231,7 @@ class uploader {
             $this->config['uploadDir'] = strlen($this->config['uploadDir'])
                 ? path::normalize($this->config['uploadDir'])
                 : path::url2fullPath("/$path");
-            $this->typeDir = "{$this->config['uploadDir']}/{$this->type}";
+            $this->typeDir = realpath("{$this->config['uploadDir']}/{$this->type}");
             $this->typeURL = "{$this->config['uploadURL']}/{$this->type}";
 
         // SITE ROOT
@@ -239,7 +239,7 @@ class uploader {
             $this->config['uploadDir'] = strlen($this->config['uploadDir'])
                 ? path::normalize($this->config['uploadDir'])
                 : path::normalize($_SERVER['DOCUMENT_ROOT']);
-            $this->typeDir = "{$this->config['uploadDir']}/{$this->type}";
+            $this->typeDir = realpath("{$this->config['uploadDir']}/{$this->type}");
             $this->typeURL = "/{$this->type}";
 
         // ABSOLUTE & RELATIVE
@@ -250,7 +250,7 @@ class uploader {
             $this->config['uploadDir'] = strlen($this->config['uploadDir'])
                 ? path::normalize($this->config['uploadDir'])
                 : path::url2fullPath($this->config['uploadURL']);
-            $this->typeDir = "{$this->config['uploadDir']}/{$this->type}";
+            $this->typeDir = realpath("{$this->config['uploadDir']}/{$this->type}");
             $this->typeURL = "{$this->config['uploadURL']}/{$this->type}";
         }
         
@@ -431,7 +431,7 @@ class uploader {
         $rPath = realpath($file);
         if (strtoupper(substr(PHP_OS, 0, 3)) == "WIN")
             $rPath = str_replace("\\", "/", $rPath);
-        if ($this->allFolders)
+        if (substr($this->typeDir, -1) == '/' )
         {
             return (substr($rPath, 0, strlen($this->typeDir)-1) === rtrim($this->typeDir,"/"));
         }
