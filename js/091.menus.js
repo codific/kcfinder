@@ -345,6 +345,8 @@ _.menuDir = function(dir, e) {
     		rootFolder = false;
     	}
     
+    if(!rootFolder)
+	{
     if (_.clipboard && _.clipboard.length) {
 
         // COPY CLIPBOARD
@@ -384,31 +386,27 @@ _.menuDir = function(dir, e) {
         _.menu.addDivider();
 
     // NEW SUBFOLDER
-    if(!rootFolder)
-    	{
-        if (_.access.dirs.create)
-            _.menu.addItem("kcact:mkdir", _.label("New Subfolder..."), function(e) {
-                if (!data.writable) return false;
-                _.fileNameDialog(
-                    {dir: data.path},
-                    "newDir", "", _.getURL("newDir"), {
-                        title: "New folder name:",
-                        errEmpty: "Please enter new folder name.",
-                        errSlash: "Unallowable characters in folder name.",
-                        errDot: "Folder name shouldn't begins with '.'"
-                    }, function() {
-                        _.refreshDir(dir);
-                        _.initDropUpload();
-                        if (!data.hasDirs) {
-                            dir.data('hasDirs', true);
-                            dir.children('span.brace').addClass('closed');
-                        }
+    if (_.access.dirs.create)
+        _.menu.addItem("kcact:mkdir", _.label("New Subfolder..."), function(e) {
+            if (!data.writable) return false;
+            _.fileNameDialog(
+                {dir: data.path},
+                "newDir", "", _.getURL("newDir"), {
+                    title: "New folder name:",
+                    errEmpty: "Please enter new folder name.",
+                    errSlash: "Unallowable characters in folder name.",
+                    errDot: "Folder name shouldn't begins with '.'"
+                }, function() {
+                    _.refreshDir(dir);
+                    _.initDropUpload();
+                    if (!data.hasDirs) {
+                        dir.data('hasDirs', true);
+                        dir.children('span.brace').addClass('closed');
                     }
-                );
-                return false;
-            }, !data.writable);
-    	}
-
+                }
+            );
+            return false;
+        }, !data.writable);
 
     // RENAME
     if (_.access.dirs.rename)
@@ -481,7 +479,7 @@ _.menuDir = function(dir, e) {
         }, !data.removable);
 
     _.menu.show(e);
-
+	}
     $('div.folder > a > span.folder').removeClass('context');
     if (dir.children('span.folder').hasClass('regular'))
         dir.children('span.folder').addClass('context');

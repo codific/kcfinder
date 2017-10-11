@@ -108,7 +108,7 @@ _.expandDir = function(dir) {
 
                         var html = "";
                         $.each(data.dirs, function(i, cdir) {
-                            html += '<div class="folder"><a href="kcdir:/' + $.$.escapeDirs(path + '/' + cdir.name) + '"><span class="brace">&nbsp;</span><span class="folder">' + $.$.htmlData(cdir.name) + '</span></a></div>';
+                            html += '<div class="folder"><a href="kcdir:/' + $.$.escapeDirs(path + '/' + cdir.name) + '" id="' + $.$.escapeDirs(path + '/' + cdir.name) + '"><span class="brace">&nbsp;</span><span class="folder">' + $.$.htmlData(cdir.name) + '</span></a></div>';
                         });
                         if (html.length) {
                             dir.parent().append('<div class="folders">' + html + '</div>');
