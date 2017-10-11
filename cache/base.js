@@ -3101,7 +3101,7 @@ _.expandDir = function(dir) {
 
                         var html = "";
                         $.each(data.dirs, function(i, cdir) {
-                            html += '<div class="folder"><a href="kcdir:/' + $.$.escapeDirs(path + '/' + cdir.name) + '"><span class="brace">&nbsp;</span><span class="folder">' + $.$.htmlData(cdir.name) + '</span></a></div>';
+                            html += '<div class="folder"><a href="kcdir:/' + $.$.escapeDirs(path + '/' + cdir.name) + '" id="' + $.$.escapeDirs(path + '/' + cdir.name) + '"><span class="brace">&nbsp;</span><span class="folder">' + $.$.htmlData(cdir.name) + '</span></a></div>';
                         });
                         if (html.length) {
                             dir.parent().append('<div class="folders">' + html + '</div>');
@@ -3522,6 +3522,8 @@ _.menuDir = function(dir, e) {
     		rootFolder = false;
     	}
     
+    if(!rootFolder)
+	{
     if (_.clipboard && _.clipboard.length) {
 
         // COPY CLIPBOARD
@@ -3561,31 +3563,27 @@ _.menuDir = function(dir, e) {
         _.menu.addDivider();
 
     // NEW SUBFOLDER
-    if(!rootFolder)
-    	{
-        if (_.access.dirs.create)
-            _.menu.addItem("kcact:mkdir", _.label("New Subfolder..."), function(e) {
-                if (!data.writable) return false;
-                _.fileNameDialog(
-                    {dir: data.path},
-                    "newDir", "", _.getURL("newDir"), {
-                        title: "New folder name:",
-                        errEmpty: "Please enter new folder name.",
-                        errSlash: "Unallowable characters in folder name.",
-                        errDot: "Folder name shouldn't begins with '.'"
-                    }, function() {
-                        _.refreshDir(dir);
-                        _.initDropUpload();
-                        if (!data.hasDirs) {
-                            dir.data('hasDirs', true);
-                            dir.children('span.brace').addClass('closed');
-                        }
+    if (_.access.dirs.create)
+        _.menu.addItem("kcact:mkdir", _.label("New Subfolder..."), function(e) {
+            if (!data.writable) return false;
+            _.fileNameDialog(
+                {dir: data.path},
+                "newDir", "", _.getURL("newDir"), {
+                    title: "New folder name:",
+                    errEmpty: "Please enter new folder name.",
+                    errSlash: "Unallowable characters in folder name.",
+                    errDot: "Folder name shouldn't begins with '.'"
+                }, function() {
+                    _.refreshDir(dir);
+                    _.initDropUpload();
+                    if (!data.hasDirs) {
+                        dir.data('hasDirs', true);
+                        dir.children('span.brace').addClass('closed');
                     }
-                );
-                return false;
-            }, !data.writable);
-    	}
-
+                }
+            );
+            return false;
+        }, !data.writable);
 
     // RENAME
     if (_.access.dirs.rename)
@@ -3658,7 +3656,7 @@ _.menuDir = function(dir, e) {
         }, !data.removable);
 
     _.menu.show(e);
-
+	}
     $('div.folder > a > span.folder').removeClass('context');
     if (dir.children('span.folder').hasClass('regular'))
         dir.children('span.folder').addClass('context');
@@ -3794,9 +3792,16 @@ _.viewImage = function(data) {
     showImage = function(data) {
         _.lock = true;
         $('#loading').html(_.label("Loading image...")).show();
-
-        var url = $.$.escapeDirs(_.uploadURL + "/" + _.dir + "/" + data.name) + "?ts=" + ts,
-            img = new Image(),
+        var cleanedUploadURL =  _.uploadURL.replace(/[^a-zA-Z 0-9]+/g, '');
+        var url = "";
+        var tempDir = _.dir;
+        if ( tempDir.indexOf(cleanedUploadURL) >= 0 ) {
+        		url = $.$.escapeDirs("/" + _.dir + "/" + data.name) + "?ts=" + ts;
+        } else {
+        		url = $.$.escapeDirs(_.uploadURL + "/" + _.dir + "/" + data.name) + "?ts=" + ts;
+        }
+        
+        var img = new Image(),
             i = $(img),
             w = $(window),
             d = $(document);

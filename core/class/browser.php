@@ -749,7 +749,11 @@ class browser extends uploader {
 
     protected function getFiles($dir) {
         $thumbDir = "{$this->config['uploadDir']}/{$this->config['thumbsDir']}/$dir";
-        $dir = "{$this->config['uploadDir']}/$dir";
+        if($this->allFolders)
+            $dir = "{$this->config['uploadDir']}$dir";
+        else
+            $dir = "{$this->config['uploadDir']}/$dir";
+        
         $return = array();
         $files = dir::content($dir, array('types' => "file"));
         if ($files === false)

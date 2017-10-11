@@ -19,9 +19,16 @@ _.viewImage = function(data) {
     showImage = function(data) {
         _.lock = true;
         $('#loading').html(_.label("Loading image...")).show();
-
-        var url = $.$.escapeDirs(_.uploadURL + "/" + _.dir + "/" + data.name) + "?ts=" + ts,
-            img = new Image(),
+        var cleanedUploadURL =  _.uploadURL.replace(/[^a-zA-Z 0-9]+/g, '');
+        var url = "";
+        var tempDir = _.dir;
+        if ( tempDir.indexOf(cleanedUploadURL) >= 0 ) {
+        		url = $.$.escapeDirs("/" + _.dir + "/" + data.name) + "?ts=" + ts;
+        } else {
+        		url = $.$.escapeDirs(_.uploadURL + "/" + _.dir + "/" + data.name) + "?ts=" + ts;
+        }
+        
+        var img = new Image(),
             i = $(img),
             w = $(window),
             d = $(document);
