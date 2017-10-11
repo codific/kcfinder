@@ -36,7 +36,7 @@ class uploader {
     protected $type;
     
 /** Got from $_GET['allFolders'] or the config option $config['allFolders']
- *  @var string */ 
+ *  @var bool */ 
     protected $allFolders;
     
 /** Helper property. Local filesystem path to the Type Directory

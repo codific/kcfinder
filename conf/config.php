@@ -32,9 +32,15 @@ $_CONFIG = array(
     'types' => array(
         '' => '',
     // (F)CKEditor types
-        'images'  => "",
-        'files'   =>  "",
-        
+        'images'  => array(
+                'type' => "bmp,gif,jpeg,jpg,png,avi,iso,mp3",
+        ),
+        'files'   =>  array(
+                'type' => "7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip",
+        ),
+        'flash' => array(
+                'type' => 'swf,flv'
+        ),
     ),
 
 // IMAGE SETTINGS
@@ -132,6 +138,4 @@ if($auth->hasIdentity() and $auth->getIdentity()->role==4)
 {
     $_CONFIG['disabled'] = false;
 }
-
-
 ?>

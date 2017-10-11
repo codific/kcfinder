@@ -50,7 +50,7 @@ class browser extends uploader {
                     !@mkdir("$thumbsDir/{$this->type}", $this->config['dirPerms'])
                 )
             )
-        )
+           )
             $this->errorMsg("Cannot access or create thumbnails folder.");
 
         $this->thumbsDir = $thumbsDir;
@@ -153,6 +153,8 @@ class browser extends uploader {
             unset($tree['dirs']);
         $files = $this->getFiles($this->session['dir']);
         $dirWritable = dir::isWritable("{$this->config['uploadDir']}/{$this->session['dir']}");
+        if($this->allFolders)
+            $files = [];
         $data = array(
             'tree' => &$tree,
             'files' => &$files,
@@ -210,10 +212,12 @@ class browser extends uploader {
         $this->postDir(); // Just for existing check
         $this->session['dir'] = "{$this->type}/{$_POST['dir']}";
         $dirWritable = dir::isWritable("{$this->config['uploadDir']}/{$this->session['dir']}");
-        return json_encode(array(
-            'files' => $this->getFiles($this->session['dir']),
-            'dirWritable' => $dirWritable
-        ));
+        $data['dirWritable'] = $dirWritable;
+        if(sizeof($_POST['dir']) > 0 && $_POST['dir'] != '')
+        {
+            $data['files'] = $this->getFiles($this->session['dir']);
+        }
+        return json_encode($data);
     }
 
     protected function act_newDir() {
