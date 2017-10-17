@@ -321,9 +321,9 @@ class uploader {
             {
                 foreach($this->config['types'] as $folder => $config)
                 {
-                    if (sizeof($folder) > 0 && $folder !== '' && !file_exists($this->typeDir.$folder))
+                    if (sizeof($folder) > 0 && $folder !== '' && !file_exists($this->typeDir."/".$folder))
                     {
-                        mkdir($this->typeDir.$folder, $this->config['dirPerms']);
+                        mkdir($this->typeDir."/".$folder, $this->config['dirPerms']);
                     }
                 }
             }
