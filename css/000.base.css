@@ -196,3 +196,18 @@ span.brace.opened, span.brace.closed {
     opacity: 0;
     filter: alpha(opacity=0);
 }
+
+#search input {
+    background:url(images/view.gif) no-repeat scroll 3px 2px #f2f2f2;
+    border:1px solid #ccc;
+    border-radius:5px 5px 5px 5px;
+    float:right;
+    font-size:1em;
+    line-height:1.2em;
+    margin:3px 4px 0;
+    padding:1px 1px 1px 20px;
+    height:16px;
+    position: absolute;
+    right: 8px;
+    margin-top: -30px;
+}

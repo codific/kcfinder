@@ -17,8 +17,7 @@
 </div>
 
 <div id="right">
-
-    <div id="toolbar">
+    <div id="toolbar" class="left">
         <div>
         <a href="kcact:upload"><span><?php echo $this->label("Upload") ?></span></a>
         <a href="kcact:refresh"><span><?php echo $this->label("Refresh") ?></span></a>
@@ -28,7 +27,7 @@
         <div id="loading"></div>
         </div>
     </div>
-
+    <div id="search" class="right"><input placeholder="Search" name="searchfield"></div>
     <div id="settings">
 
     <div>

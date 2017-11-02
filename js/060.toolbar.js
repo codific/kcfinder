@@ -92,6 +92,30 @@ _.initToolbar = function() {
 
         return false;
     });
+    
+    var searchBox = $('input[name=searchfield]');
+    var files = document.getElementsByClassName('file');
+
+    $(".folder a").click(function(e){
+    		searchBox.val('');
+    });
+    
+    searchBox.keyup(function(){
+        var searchBoxValue = searchBox.val().trim();
+
+        $(files).removeClass("selected");
+        $.each(files, function(index, file){
+            var fileName = file.childNodes.item(1).textContent;
+            if (fileName.indexOf(searchBoxValue) === -1){
+                file.style.display = "none";
+            }
+
+            if (fileName.indexOf(searchBoxValue) !== -1){
+                file.style.display = "";
+            }
+        });
+
+    });
 
     _.initUploadButton();
 };
@@ -307,3 +331,8 @@ _.refresh = function(selected) {
         }
     });
 };
+
+_.search = function(input){
+
+}
+

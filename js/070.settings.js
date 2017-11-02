@@ -34,7 +34,10 @@ _.initSettings = function() {
     });
 
     $.each(shows, function(i, val) {
-        $('#show input[name="' + val + '"]').get(0).checked = ($.$.kuki.get('show' + val) == "on") ? "checked" : "";
+//	    	if( typeof $('#show input[name="' + val + '"]').get(0) != "undefined")
+//	    		$('#show input[name="' + val + '"]').get(0).checked = ($.$.kuki.get('show' + val) == "on") ? "checked" : "";
+    		var checkedShow = ($.$.kuki.get('show' + val) == "on") ? "checked" : "";
+    		$('#show input[name="' + val + '"]').prop('checked',checkedShow);
     });
 
     if (!_.orders.length)
@@ -50,9 +53,14 @@ _.initSettings = function() {
     if (!$.$.kuki.isSet('orderDesc'))
         $.$.kuki.set('orderDesc', "off");
 
-    $('#order input[value="' + $.$.kuki.get('order') + '"]').get(0).checked = true;
-    $('#order input[name="desc"]').get(0).checked = ($.$.kuki.get('orderDesc') == "on");
-
+//    if( typeof $('#order input[value="' + $.$.kuki.get('order') + '"]').get(0) != "undefined")
+//    		$('#order input[value="' + $.$.kuki.get('order') + '"]').get(0).checked = true;    
+//    if( typeof $('#order input[name="desc"]').get(0) != "undefined")
+//    		$('#order input[name="desc"]').get(0).checked = ($.$.kuki.get('orderDesc') == "on");
+    
+    $('#order input[name="sort"]').val([$.$.kuki.get('order')]);
+    $('#order input[name="desc"]').prop('checked', ($.$.kuki.get('orderDesc') == "on"));
+    
     $('#order input[type="radio"]').click(function() {
         $.$.kuki.set('order', this.value);
         _.orderFiles();
@@ -69,8 +77,10 @@ _.initSettings = function() {
     if ($.$.kuki.get('view') == "list")
         $('#show').parent().hide();
 
-    $('#view input[value="' + $.$.kuki.get('view') + '"]').get(0).checked = true;
-
+//    if( typeof $('#view input[value="' + $.$.kuki.get('view') + '"]').get(0) != "undefined")
+//    		$('#view input[value="' + $.$.kuki.get('view') + '"]').get(0).checked = true;
+    $('#view input[name="view"]').val([$.$.kuki.get('view')]);
+    
     $('#view input').click(function() {
         var view = this.value;
         if ($.$.kuki.get('view') != view) {
