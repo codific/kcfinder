@@ -101,11 +101,11 @@ _.initToolbar = function() {
     });
     
     searchBox.keyup(function(){
-        var searchBoxValue = searchBox.val().trim();
+        var searchBoxValue = searchBox.val().trim().toLowerCase();
 
         $(files).removeClass("selected");
         $.each(files, function(index, file){
-            var fileName = file.childNodes.item(1).textContent;
+            var fileName = file.childNodes.item(1).textContent.toLowerCase();
             if (fileName.indexOf(searchBoxValue) === -1){
                 file.style.display = "none";
             }
